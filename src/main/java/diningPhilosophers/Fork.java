@@ -7,11 +7,13 @@ import java.util.concurrent.locks.ReentrantLock;
  * Created by dmytro_veres on 20.07.14.
  */
 public class Fork {
+    private static int maxUid = 0;
+
     private final int id;
     private Lock lock;
 
-    public Fork(int id) {
-        this.id = id;
+    public Fork() {
+        id = maxUid++;
         lock = new ReentrantLock();
     }
 

@@ -11,7 +11,7 @@ public class Philosopher implements Runnable {
     public static final long THINK_TIME = 500;
     public static final long EAT_TIME = 300;
 
-    private static int maxUid = 1;
+    private static int maxUid = 0;
 
     private final int id;
     private String name;
@@ -25,23 +25,35 @@ public class Philosopher implements Runnable {
 
     @Override
     public void run() {
-        Fork firstFork = forks[id];
-        Fork secondFork = forks[(id + 1) % forks.length];
+        while(true) {
+            Fork firstFork = forks[id];
+            Fork secondFork = forks[(id + 1) % forks.length];
 
-        Lock firstForkLock = firstFork.getLock();
-        Lock secondForkLock = secondFork.getLock();
-        firstForkLock.lock();
-        try {
-            secondForkLock.lock();
+            Lock firstForkLock = firstFork.getLock();
+            Lock secondForkLock = secondFork.getLock();
+            firstForkLock.lock();
+            System.out.println(name + " takes right fork");
             try {
-                eat();
+                secondForkLock.lock();
+                System.out.println(name + " takes left fork");
+                try {
+                    eat();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } finally {
+                    secondForkLock.unlock();
+                    System.out.println(name + " drops left fork");
+                }
+            } finally {
+                firstForkLock.unlock();
+                System.out.println(name + " drops right fork");
+            }
+
+            try {
+                think();
             } catch (InterruptedException e) {
                 e.printStackTrace();
-            } finally {
-                secondForkLock.unlock();
             }
-        } finally {
-            firstForkLock.unlock();
         }
     }
 
