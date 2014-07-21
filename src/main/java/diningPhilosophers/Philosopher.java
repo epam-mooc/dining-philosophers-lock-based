@@ -26,8 +26,15 @@ public class Philosopher implements Runnable {
     @Override
     public void run() {
         while(true) {
-            Fork firstFork = forks[id];
-            Fork secondFork = forks[(id + 1) % forks.length];
+            Fork firstFork, secondFork;
+
+            if(id < ((id + 1) % forks.length)) {
+                firstFork = forks[id];
+                secondFork = forks[(id + 1) % forks.length];
+            } else {
+                firstFork = forks[(id + 1) % forks.length];
+                secondFork = forks[id];
+            }
 
             Lock firstForkLock = firstFork.getLock();
             Lock secondForkLock = secondFork.getLock();
